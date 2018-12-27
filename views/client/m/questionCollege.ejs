@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>
+        <%= title%>
+    </title>
+    <script>
+        function Rem() {
+            if (document.documentElement.clientWidth >= 750) {
+
+                document.documentElement.style.width = 750 + "px";
+                var rem = 375 / 7.5;
+                document.documentElement.style.fontSize = rem + 'px';
+
+            } else if (document.documentElement.clientWidth <= 320) {
+                document.documentElement.style.width = 320 + "px";
+                var rem = 320 / 7.5;
+                document.documentElement.style.fontSize = rem + 'px';
+
+            } else {
+                var rem = document.documentElement.clientWidth / 7.5;
+                document.documentElement.style.fontSize = rem + 'px';
+            }
+        }
+        Rem()
+        window.onresize = function() {
+            Rem();
+        };
+    </script>
+    <link rel="stylesheet" href="/stylesheets/front/m/index.css">
+    <link rel="stylesheet" href="/stylesheets/common/icon_font/iconfont.css">
+</head>
+
+<body class="questionIndex">
+    <h2 class="title" onclick="(function(){window.location.href='/m/question'})()">
+        <i class="iconfont icon-return"></i>
+        <p>网络工程刷题</p>
+    </h2>
+    <ul class="selectOption">
+        <li>
+            <label for="course">专业：</label>
+            <div class="select">
+                <select name="" id="course">
+            </select>
+            </div>
+        </li>
+        <li>
+            <label for="startunit">开始单元：</label>
+
+            <div class="select">
+                <select name="" id="startunit">
+            </select>
+            </div>
+        </li>
+        <li>
+            <label for="endunit">结束单元：</label>
+
+            <div class="select">
+                <select name="" id="endunit">
+            </select>
+            </div>
+        </li>
+        <li>
+            <label for="stem_type">试题类型：</label>
+            <div class="select">
+                <select name="" id="stem_type">
+                        <option value="">请选择</option>
+                        <option value="0-判断">0-判断</option>
+                        <option value="1-单选">1-单选</option>
+                        <option value="2-多选">2-多选</option>
+                        <option value="3-填空（人工判卷）">3-填空（人工判卷）</option>
+                        <option value="4-问答">4-问答</option>
+                        <option value="5-填空（自动判卷）">5-填空（自动判卷）</option>
+                </select>
+            </div>
+
+        </li>
+
+        <li>
+            <p id="selectbtn">查询</p>
+        </li>
+    </ul>
+    <div class="pupop">
+        <p>无数据</p>
+    </div>
+    <script src="/javascripts/zepto.min.js"></script>
+    <script>
+        var originDataMemoery = JSON.parse(sessionStorage.getItem("questionSendData") || null)
+        $(document).ready(() => {
+                //初始化数据
+                init()
+                initstem_type()
+                    // 数据请求操作
+
+                $("#selectbtn").click((e) => {
+                    let sendData = {
+                        courseId: $("#course").val(),
+                        startunit: $("#startunit").val(),
+                        endunit: $("#endunit").val(),
+                        stem_type: $("#stem_type").val()
+                    }
+                    sessionStorage.setItem("questionSendData", JSON.stringify(sendData))
+                    window.location.href = "/m/questionDetail"
+                })
+            })
+            //初始化函数
+        function init() {
+            $.ajax({
+                url: '/api/client/questions/selectClass', //用于文件上传的服务器端请求地址 
+                type: "get",
+                success: function(data) {
+                    if (data.code == "20021") {
+
+                        render(data.data)
+                    } else {
+                        alert("读取学院分类失败")
+                    }
+                },
+                error: function(data, status, e) //服务器响应失败处理函数 
+                    {
+                        alert(e);
+                    }
+            })
+        }
+        //获取url参数
+        function GetRequest() {
+            var url = location.search; //获取url中"?"符后的字串   
+            var theRequest = new Object();
+            if (url.indexOf("?") != -1) {
+                var str = url.substr(1);
+                strs = str.split("&");
+                for (var i = 0; i < strs.length; i++) {
+                    theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+                }
+            }
+            return theRequest;
+        }
+        //初始渲染函数
+        function render(data) {
+            var collegeId = sessionStorage.getItem("collegeId") || GetRequest().collegeId
+            console.log(collegeId)
+            if (!collegeId) {
+                $(".pupop").css("display", "flex")
+                setTimeout(() => {
+                    $(".pupop").hide()
+                    window.location.href = "/m/question"
+                        // window.location.back()
+                }, 1500)
+            }
+            console.log(data)
+            var data_college = data.college.filter((i) => {
+                if (i.id == collegeId) {
+                    return true
+                }
+            })
+
+            //设置标题
+            $(".title p").html(data_college[0].cnname)
+                //进行标题缓存
+            sessionStorage.setItem("title", data_college[0].cnname)
+            var data_course = data.course.filter((i) => {
+                    if (i.parent_id == collegeId) {
+                        return true
+                    }
+                })
+                //课程渲染
+            let courseStr = ""
+            data_course.forEach((j, index) => {
+
+                if (originDataMemoery && originDataMemoery.courseId == j.id) {
+                    courseStr += ` <option value="${j.id}" selected>${j.cnname}</option>`
+                } else {
+                    courseStr += ` <option value="${j.id}">${j.cnname}</option>`
+                }
+
+
+            })
+            $("#course").html(courseStr)
+            $("#startunit").html(renderUnit(1, 20, "startunit"))
+            $("#endunit").html(renderUnit(1, 20, "endunit"))
+            listenstartUnit() //开始单元监听
+            listenEndUnit()
+
+        }
+        //渲染单元
+        function renderUnit(min, max, unit) {
+            let str = ` <option value="">请选择</option>`
+            console.log(originDataMemoery)
+            for (let i = min; i <= max; i++) {
+                if (unit == "endunit") {
+                    if (originDataMemoery) {
+                        if (i >= originDataMemoery[unit]) {
+                            if (originDataMemoery[unit] == i) {
+
+                                str += `<option value = "${i}" selected> ${i}单元 </option>`
+                            } else {
+                                str += `<option value = "${i}"> ${i}单元 </option>`
+                            }
+                        }
+                    } else {
+                        str += `<option value = "${i}"> ${i}单元 </option>`
+                    }
+                } else {
+                    if (originDataMemoery && originDataMemoery[unit] == i) {
+
+                        str += `<option value = "${i}" selected> ${i}单元 </option>`
+                    } else {
+                        str += `<option value = "${i}"> ${i}单元 </option>`
+                    }
+                }
+            }
+            return str
+        }
+        //渲染题型
+        function initstem_type() {
+            let option = stem_type.querySelectorAll("option")
+            for (let i = 0; i < option.length; i++) {
+                if (originDataMemoery && originDataMemoery.stem_type == option[i].innerHTML) {
+                    option[i].setAttribute("selected", true)
+                }
+
+            }
+
+
+        }
+        //事件监听
+        function listenstartUnit(data) {
+            $("#startunit").on("change", (e) => {
+                if (originDataMemoery) {
+                    originDataMemoery.endunit = 0
+                }
+
+                $("#endunit").html(renderUnit(parseInt($("#startunit").val()), 20, "endunit"))
+                $("#endunit option").eq(1).attr("selected", true)
+                listenEndUnit()
+            })
+        }
+
+        function listenEndUnit(data) {
+            $("#endunit").on("change", (e) => {
+                if ($("#startunit").val() == "") {
+                    $("#startunit option").eq(1).attr("selected", true)
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

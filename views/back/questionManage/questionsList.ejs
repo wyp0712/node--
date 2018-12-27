@@ -1,0 +1,286 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        <%= title%>
+    </title>
+
+    <!-- BOOTSTRAP STYLES-->
+    <link href="/assets/css/bootstrap.css" rel="stylesheet" />
+    <!-- FONTAWESOME STYLES-->
+    <link href="/assets/css/font-awesome.css" rel="stylesheet" />
+    <!--CUSTOM BASIC STYLES-->
+    <link href="/assets/css/basic.css" rel="stylesheet" />
+    <!--CUSTOM MAIN STYLES-->
+    <link href="/assets/css/custom.css" rel="stylesheet" />
+    <link href="/stylesheets/back.css" rel="stylesheet" />
+    <!-- GOOGLE FONTS-->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+</head>
+
+<body>
+    <div id="wrapper">
+        <% include ../common/header.ejs %>
+            <!-- /. NAV SIDE  -->
+
+            <div id="page-wrapper">
+
+                <div id="page-inner">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h1 class="page-head-line">试题列表</h1>
+                            <h1 class="page-subhead-line">全部试题列表</h1>
+
+                        </div>
+                    </div>
+
+
+                    <!-- /. ROW  -->
+
+                    <div class="col-md-12">
+                        <!--    Context Classes  -->
+                        <div class="panel panel-default">
+
+                            <div class="panel-heading">
+                                试题分类筛选
+                            </div>
+                            <div class="select_question">
+                                <p>
+                                    <label for="college">学院</label>
+                                    <select name="" id="college">
+                                        <option value=""></option>
+                                    </select>
+                                </p>
+                                <p>
+                                    <label for="course">课程</label>
+                                    <select name="" id="course">
+                                        <option value=""></option>
+                                    </select>
+                                </p>
+                                <p>
+                                    <label for="exam_type">考题阶段</label>
+                                    <select name="" id="exam_type">
+                                            <option value="">请选择</option>
+                                        <option value="日考">日考</option>
+                                        <option value="周考">周考</option>
+                                        <option value="月考">月考</option>
+                                    </select>
+                                </p>
+                                <p>
+                                    <label for="stem_type">考题类型</label>
+                                    <select name="" id="stem_type">
+                                            <option value="">请选择</option>
+                                        <option value="0-判断">0-判断</option>
+                                        <option value="1-单选">1-单选</option>
+                                        <option value="2-多选">2-多选</option>
+                                        <option value="3-填空（人工判卷）">3-填空（人工判卷）</option>
+                                        <option value="4-问答">4-问答</option>
+                                        <option value="5-填空（自动判卷）">5-填空（自动判卷）</option>
+                                    </select>
+                                </p>
+                                <p>
+                                    <label for="unit">单元</label>
+                                    <select name="" id="unit">
+                                        <option value="">请选择</option>
+                                        <option value="1">1单元</option>
+                                        <option value="2">2单元</option>
+                                        <option value="3">3单元</option>
+                                        <option value="4">4单元</option>
+                                        <option value="5">5单元</option>
+                                        <option value="6">6单元</option>
+                                        <option value="7">7单元</option>
+                                        <option value="8">8单元</option>
+                                        <option value="9">9单元</option>
+                                        <option value="10">10单元</option>
+                                        <option value="11">11单元</option>
+                                        <option value="12">12单元</option>
+                                        <option value="13">13单元</option>
+                                        <option value="14">14单元</option>
+                                        <option value="15">15单元</option>
+                                        <option value="16">16单元</option>
+                                        <option value="17">17单元</option>
+                                        <option value="18">18单元</option>
+                                        <option value="19">19单元</option>
+                                        <option value="20">20单元</option>
+                                    </select>
+                                </p>
+                                <p>
+                                    <button id="selectbtn">查询</button>
+                                </p>
+                            </div>
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table" id="tablelist">
+                                        <thead>
+                                            <tr>
+
+                                                <th style="text-align: center">单元</th>
+                                                <th style="text-align: center">题型</th>
+                                                <th style="text-align: center">题干</th>
+                                                <th style="text-align: center">选项</th>
+
+                                                <th style="text-align: center">答案</th>
+                                                <th style="width:10%;text-align: center">出题人</th>
+                                                <th style="width:15%;text-align: center">操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbody_con">
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!--  end  Context Classes  -->
+                    </div>
+
+                </div>
+                <!-- /. WRAPPER  -->
+
+            </div>
+
+
+            <!-- /. FOOTER  -->
+            <!-- SCRIPTS -AT THE BOTOM TO REDUCE THE LOAD TIME-->
+            <!-- JQUERY SCRIPTS -->
+            <script src="/assets/js/jquery-1.10.2.js"></script>
+            <!-- BOOTSTRAP SCRIPTS -->
+            <script src="/assets/js/bootstrap.js"></script>
+
+
+            <script>
+                // var originData = null
+                $(document).ready(() => {
+                        //初始化数据
+                        init()
+                            // 数据请求操作
+
+                        $("#selectbtn").click((e) => {
+                            $.ajax({
+                                url: '/api/back/questionsManage/getQuestion', //用于文件上传的服务器端请求地址 
+                                type: "get",
+                                data: {
+                                    collegeId: $("#college").val(),
+                                    courseId: $("#course").val(),
+                                    unit: $("#unit").val(),
+                                    exam_type: $("#exam_type").val(),
+                                    stem_type: $("#stem_type").val()
+                                },
+                                success: function(data) {
+                                    console.log(data)
+                                    if (data.code == "10211") {
+                                        renderList(data.data)
+                                    } else {
+                                        alert("读取学院分类失败")
+                                    }
+                                },
+                                error: function(data, status, e) //服务器响应失败处理函数 
+                                    {
+                                        alert(e);
+                                    }
+                            })
+                        })
+                    })
+                    //列表渲染函数
+                function renderList(data) {
+                    let str = '';
+
+                    data.forEach((i, index) => {
+                        str += ` <tr class="success">
+                                <td style="text-align: center">${i.unit}</td>
+                                <td style="text-align: center">${i.stem_type}</td>
+                                <td style="text-align: center">${i.stem}</td>
+                                <td style="text-align: center">
+                                    <p>A.${i.option_1}</p>
+                                    <p>B.${i.option_2}</p>
+                                    <p>C.${i.option_3}</p>
+                                    <p>D.${i.option_4}</p>
+                                </td>
+                                <td style="text-align: center">${i.result}</td>
+                                <td style="text-align: center">${i.author}</td>
+                                <td style="text-align: center"> <button class="btn btn-danger deleteBtn" id="${i.id}"><i class="glyphicon glyphicon-home"  id="${i.id}"></i>删除</button>
+                                    <button class="btn btn-danger amendBtn" id="${i.id}"><i class="glyphicon glyphicon-home"  id="${i.id}"></i>修改</button></td>
+                            </tr>`
+                    });
+
+                    $("#tbody_con").html(str)
+
+                }
+                //初始化函数
+                function init() {
+                    $.ajax({
+                        url: '/api/back/classManage/selectClass', //用于文件上传的服务器端请求地址 
+                        type: "get",
+                        success: function(data) {
+                            console.log(data)
+                            if (data.code == "10121") {
+                                originData = data.data
+                                render(data.data)
+                            } else {
+                                alert("读取学院分类失败")
+                            }
+                        },
+                        error: function(data, status, e) //服务器响应失败处理函数 
+                            {
+                                alert(e);
+                            }
+                    })
+
+                }
+                //初始渲染函数
+                function render(data) {
+                    let collegeStr = '';
+
+                    data.college.forEach((i, index) => {
+                        if (index == 0) {
+                            collegeStr += ` <option value="${i.id}" selected>${i.cnname}</option>`
+                        } else {
+                            collegeStr += ` <option value="${i.id}">${i.cnname}</option>`
+                        }
+                    });
+                    let courseStr = ""
+                    data.course.forEach((j, index) => {
+                        if (j.parent_id == data.college[0].id) {
+                            courseStr += ` <option value="${j.id}">${j.cnname}</option>`
+                        }
+                    })
+                    $("#college").html(collegeStr)
+                    $("#course").html(courseStr)
+                    listen(data)
+                }
+                //事件监听
+                function listen(data) {
+                    $("#college").on("click", (e) => {
+                        let collegeId = '';
+                        data.college.forEach((i, index) => {
+                            if (e.target.value == i.id) {
+                                collegeId = i.id
+                            }
+                        });
+                        let courseStr = ""
+                        data.course.forEach((j, index) => {
+                            if (j.parent_id == collegeId) {
+                                courseStr += ` <option value="${j.id}">${j.cnname}</option>`
+                            }
+                        })
+                        $("#course").html(courseStr)
+                    })
+                }
+            </script>
+
+</body>
+
+
+<script src="/assets/js/jquery-1.10.2.js"></script>
+<!-- BOOTSTRAP SCRIPTS -->
+<script src="/assets/js/bootstrap.js"></script>
+<!-- METISMENU SCRIPTS -->
+<script src="/assets/js/jquery.metisMenu.js"></script>
+<!-- CUSTOM SCRIPTS -->
+<script src="/assets/js/custom.js"></script>
+
+</html>

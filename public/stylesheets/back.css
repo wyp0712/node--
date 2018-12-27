@@ -1,0 +1,60 @@
+html {
+    height: 100%;
+}
+
+.login_body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background: lightgoldenrodyellow;
+}
+
+.login_main {
+    width: 500px;
+    padding: 20px;
+    border: 1px solid black;
+    background: lightgrey;
+    border-radius: 20px;
+}
+
+.login_list {
+    margin: 50px 0;
+}
+
+
+/* 主页 */
+
+.index_body {
+    background: lightgoldenrodyellow
+}
+
+.index_container {
+    padding: 0px;
+}
+
+.index_tab {
+    background: lightblue;
+    padding: 0;
+}
+
+.index_tab li {
+    padding: 0px 10px;
+}
+
+.index_active {
+    background: "#337ab7"
+}
+
+.addQuestion {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.select_question {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center
+}

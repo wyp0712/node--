@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        <%= title%>
+    </title>
+
+    <!-- BOOTSTRAP STYLES-->
+    <link href="/assets/css/bootstrap.css" rel="stylesheet" />
+    <!-- FONTAWESOME STYLES-->
+    <link href="/assets/css/font-awesome.css" rel="stylesheet" />
+    <!--CUSTOM BASIC STYLES-->
+    <link href="/assets/css/basic.css" rel="stylesheet" />
+    <!--CUSTOM MAIN STYLES-->
+    <link href="/assets/css/custom.css" rel="stylesheet" />
+    <!-- GOOGLE FONTS-->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+</head>
+
+<body>
+    <div id="wrapper">
+        <% include ../common/header.ejs %>
+            <!-- /. NAV SIDE  -->
+
+            <div id="page-wrapper">
+
+                <div id="page-inner">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h1 class="page-head-line">课程分类</h1>
+                            <h1 class="page-subhead-line">课程分类列表</h1>
+
+                        </div>
+                    </div>
+
+
+                    <!-- /. ROW  -->
+
+                    <div class="col-md-12">
+                        <!--    Context Classes  -->
+                        <div class="panel panel-default">
+
+                            <div class="panel-heading">
+                                课程分类
+                            </div>
+
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table" id="tablelist">
+                                        <thead>
+                                            <tr>
+                                                <th>序号</th>
+                                                <th>课程</th>
+                                                <th>学院</th>
+                                                <th>添加时间</th>
+                                                <th>操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% for(var i=0;i<courseData.length;i++){%>
+                                                <tr class="success">
+                                                    <td>
+                                                        <%= i%>
+                                                    </td>
+                                                    <td>
+                                                        <%= courseData[i].cnname%>
+                                                    </td>
+                                                    <td>
+                                                        <%= courseData[i].college%>
+                                                    </td>
+
+                                                    <td>
+                                                        <%= courseData[i].time%>
+                                                    </td>
+
+                                                    <td> <button class="btn btn-danger deleteBtn" id="<%= courseData[i].id%>" value="<%= courseData[i].enname%>"><i class="glyphicon glyphicon-home"  id="<%= courseData[i].id%>" value="<%= courseData[i].enname%>"></i>删除</button>
+                                                        <button class="btn btn-danger amendBtn" id="<%= courseData[i].id%>" value="<%= courseData[i].enname%>"><i class="glyphicon glyphicon-home"  id="<%= courseData[i].id%>" value="<%= courseData[i].enname%>"></i>修改</button></td>
+                                                </tr>
+                                                <%}%>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!--  end  Context Classes  -->
+                    </div>
+
+                </div>
+                <!-- /. WRAPPER  -->
+
+            </div>
+
+            <script src="/assets/js/jquery-1.10.2.js"></script>
+            <!-- BOOTSTRAP SCRIPTS -->
+            <script src="/assets/js/bootstrap.js"></script>
+
+
+            <script>
+                // var $data=JSON.parse('<%- JSON.stringify(courseData)%>')
+                // console.log($data)
+                var id = ""
+                $(document).ready(() => {
+
+                    // 删除操作
+
+                    $(".deleteBtn").click((e) => {
+                        console.log(e.target.value)
+
+                        disp_confirm("是否确认删除", e.target.id, e.target.value)
+                    })
+
+                    // 删除是否确认
+                    function disp_confirm(msg, id, enname) {
+                        var r = confirm(msg)
+                        console.log(enname)
+                        if (r == true) {
+                            $.ajax({
+                                url: '/api/back/classManage/deleteCourse', //用于文件上传的服务器端请求地址 
+                                type: "post",
+                                data: {
+                                    id,
+                                    enname
+                                },
+
+                                success: function(data) //服务器成功响应处理函数 
+                                    {
+                                        if (data.code == "10131") {
+                                            alert("删除成功")
+                                        } else {
+                                            alert("删除失败")
+                                        }
+
+                                    },
+                                error: function(data, status, e) //服务器响应失败处理函数 
+                                    {
+                                        alert(e);
+                                    }
+                            })
+                        }
+                    }
+
+
+
+                })
+            </script>
+
+</body>
+
+
+<script src="/assets/js/jquery-1.10.2.js"></script>
+<!-- BOOTSTRAP SCRIPTS -->
+<script src="/assets/js/bootstrap.js"></script>
+<!-- METISMENU SCRIPTS -->
+<script src="/assets/js/jquery.metisMenu.js"></script>
+<!-- CUSTOM SCRIPTS -->
+<script src="/assets/js/custom.js"></script>
+
+</html>

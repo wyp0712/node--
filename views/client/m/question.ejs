@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>
+        <%= title%>
+    </title>
+    <script>
+        function Rem() {
+            if (document.documentElement.clientWidth >= 750) {
+
+                document.documentElement.style.width = 750 + "px";
+                var rem = 375 / 7.5;
+                document.documentElement.style.fontSize = rem + 'px';
+
+            } else if (document.documentElement.clientWidth <= 320) {
+                document.documentElement.style.width = 320 + "px";
+                var rem = 320 / 7.5;
+                document.documentElement.style.fontSize = rem + 'px';
+
+            } else {
+                var rem = document.documentElement.clientWidth / 7.5;
+                document.documentElement.style.fontSize = rem + 'px';
+            }
+        }
+        Rem()
+        window.onresize = function() {
+            Rem();
+        };
+    </script>
+    <link rel="stylesheet" href="/stylesheets/front/m/index.css">
+    <link rel="stylesheet" href="/stylesheets/common/icon_font/iconfont.css">
+</head>
+
+<body class="collegeClass">
+    <h2 class="title" onclick="(function(){window.location.href='/m/question'})()">
+        <i class="iconfont icon-return"></i>
+        <p>题库</p>
+    </h2>
+    <h3>学院设置</h3>
+    <ul class="collegeList" id="collegeList">
+        <li data-id>
+            <aside>
+                <h4>网站工程</h4>
+                <p>题目：3000道</p>
+            </aside>
+            <i class="iconfont icon-enter"></i>
+        </li>
+        <li>
+            <aside>
+                <h4>网站工程</h4>
+                <p>题目：3000道</p>
+            </aside>
+            <i class="iconfont icon-enter"></i>
+        </li>
+    </ul>
+    <script src="/javascripts/zepto.min.js"></script>
+    <script>
+        // var originDataMemoery = JSON.parse(sessionStorage.getItem("questionSendData") || null)
+        $(document).ready(() => {
+                //初始化数据
+                init()
+                    // initstem_type()
+                    // 数据请求操作
+
+                // $("#selectbtn").click((e) => {
+                //     let sendData = {
+                //         courseId: $("#course").val(),
+                //         startunit: $("#startunit").val(),
+                //         endunit: $("#endunit").val(),
+                //         stem_type: $("#stem_type").val()
+                //     }
+                //     sessionStorage.setItem("questionSendData", JSON.stringify(sendData))
+                //     window.location.href = "/m/questionDetail"
+                // })
+            })
+            //     //初始化函数
+        function init() {
+            $.ajax({
+                url: '/api/client/questions/selectClass', //用于文件上传的服务器端请求地址 
+                type: "get",
+                success: function(data) {
+                    if (data.code == "20021") {
+
+                        render(data.data)
+                    } else {
+                        alert("读取学院分类失败")
+                    }
+                },
+                error: function(data, status, e) //服务器响应失败处理函数 
+                    {
+                        alert(e);
+                    }
+            })
+        }
+        // //初始渲染函数
+        function render(data) {
+            //课程渲染
+            let collegeStr = ""
+            data.college.forEach((j, index) => {
+
+                collegeStr += `<li data-id="${j.id}">
+                                    <aside>
+                                        <h4>${j.cnname}</h4>
+                                        <p>题目：${j.questions}道</p>
+                                    </aside>
+                                    <i class="iconfont icon-enter"></i>
+                                </li>`
+            })
+            $(".collegeList").html(collegeStr)
+
+            listen() //开始监听
+        }
+
+
+        //事件监听
+        function listen(data) {
+            $("#collegeList li").each((index, item) => {
+                $(item).click((e) => {
+
+                    sessionStorage.setItem("collegeId", $(item).attr("data-id"))
+                    window.location.href = `/m/questionCollege`
+                })
+            })
+
+        }
+
+        // function listenEndUnit(data) {
+        //     $("#endunit").on("change", (e) => {
+        //         if ($("#startunit").val() == "") {
+        //             $("#startunit option").eq(1).attr("selected", true)
+        //         }
+        //     })
+        // }
+    </script>
+</body>
+
+</html>

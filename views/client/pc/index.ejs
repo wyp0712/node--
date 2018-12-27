@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>
+        <%= title%>
+    </title>
+    <link rel="stylesheet" href="/stylesheets/front/conmon.css">
+    <link rel="stylesheet" href="/stylesheets/front/fonts/iconfont.css">
+    <style>
+        .chose {
+            display: flex;
+            padding: .2rem;
+        }
+        
+        .chose li {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: .1rem 0;
+        }
+        
+        .chose li i.icon {
+            font-size: .6rem;
+            border-radius: 50%;
+            height: 1.2rem;
+            width: 1.2rem;
+            border: .04rem solid #ccc;
+            text-align: center;
+            line-height: 1.2rem;
+            color: #999;
+        }
+        
+        .chose li span {
+            font-size: .3rem;
+        }
+        
+        @media screen and (max-width:750px) {
+            .chose {
+                flex-wrap: wrap;
+            }
+            .chose li {
+                width: 50%;
+                flex-shrink: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <header>
+            <div class="logo"><img src="../images/logoPicture.png" alt=""></div>
+            <div class="h-msg">
+                <span class="name">skk</span><em></em><span class="exit">退出</span>
+            </div>
+        </header>
+        <div class="nav">
+            <a class="item f-cur" href="javascript:void(0)">
+                <i class="icon iconfont icon-shouye"></i>
+                <span>首页</span>
+            </a>
+            <a class="item" href="/pc/workstore">
+                <i class="icon iconfont icon-zixun"></i>
+                <span>在线刷题</span>
+            </a>
+            <a class="item" href="errorstore">
+                <i class="icon iconfont icon-gouwuche"></i>
+                <span>错题分析</span>
+            </a>
+            <a class="item" href="set.html">
+                <i class="icon iconfont icon-wode"></i>
+                <span>设置</span>
+            </a>
+        </div>
+        <section>
+            <ul class="chose">
+                <li><i class="icon iconfont icon-07"></i><span>开始试题</span></li>
+                <li><i class="icon iconfont icon-zixun"></i><span>历史试题</span></li>
+                <li><i class="icon iconfont icon-zixun"></i><span>历史错题</span></li>
+                <li><i class="icon iconfont icon-shezhi"></i><span>设置</span></li>
+            </ul>
+        </section>
+        <footer>
+            <a class="item f-cur" href="javascript:void(0)">
+                <i class="icon iconfont icon-shouye"></i>
+                <span>首页</span>
+            </a>
+            <a class="item" href="/pc/workstore">
+                <i class="icon iconfont icon-zixun"></i>
+                <span>在线刷题</span>
+            </a>
+            <a class="item" href="errorstore">
+                <i class="icon iconfont icon-gouwuche"></i>
+                <span>错题分析</span>
+            </a>
+            <a class="item" href="set.html">
+                <i class="icon iconfont icon-wode"></i>
+                <span>设置</span>
+            </a>
+        </footer>
+        <div class="copy">
+            Copyright &copy;北京八维博大科技有限公司
+        </div>
+    </div>
+</body>
+
+</html>

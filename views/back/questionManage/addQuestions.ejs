@@ -1,0 +1,279 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>
+        <%= title%>
+    </title>
+
+    <link href="/assets/css/bootstrap.css" rel="stylesheet" />
+    <!-- FONTAWESOME STYLES-->
+    <link href="/assets/css/font-awesome.css" rel="stylesheet" />
+    <!--CUSTOM BASIC STYLES-->
+    <link href="/assets/css/basic.css" rel="stylesheet" />
+    <!--CUSTOM MAIN STYLES-->
+    <link href="/assets/css/custom.css" rel="stylesheet" />
+    <!-- GOOGLE FONTS-->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+    <link href="/stylesheets/back.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div id="wrapper">
+        <% include ../common/header.ejs %>
+            <div id="page-wrapper">
+                <div id="page-inner">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h1 class="page-head-line">课程管理</h1>
+                            <h1 class="page-subhead-line">自动添加课程</h1>
+                        </div>
+                    </div>
+                    <!-- /. ROW  -->
+                    <div class="row">
+                        <div class="col-md-8 col-sm-8 col-xs-16">
+                            <div class="panel panel-info">
+                                <div class="panel-heading">
+                                    添加
+                                </div>
+                                <div class="panel-body">
+                                    <form role="form">
+                                        <div class="form-group addQuestion">
+                                            <p>
+                                                <label>学院</label>
+                                                <select name="" id="college"></select>
+                                            </p>
+                                            <p>
+                                                <label>课程</label>
+                                                <select name="" id="course"> </select>
+                                            </p>
+                                            <p>
+                                                <label>单元</label>
+                                                <select name="" id="unit">
+                                                                <% for(var i=1; i<21;i++){%>
+                                                                        <option value=<%=i%>>
+                                                                            <%=i%>
+                                                                        </option>
+                                                                    <%}%>
+                                                                        
+                                                                </select>
+                                            </p>
+                                            <p>
+                                                <label>类型</label>
+                                                <select name="" id="exam_type">
+                                                          <option value="日考">日考</option>
+                                                          <option value="周考">周考</option>
+                                                          <option value="月考">月考</option>         
+                                                    </select>
+                                            </p>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>选择文件</label>
+                                            <input type="file" id="selectFile">
+
+                                        </div>
+                                        <!-- <div class="form-group">
+                                            <label>课程</label>
+                                            <input class="form-control" type="text" id="course">
+                                            
+                                        </div>
+                                        <div class="form-group">
+                                            <label>课程标识</label>
+                                            <input class="form-control" type="text" id="coursesign">
+                                           
+                                        </div> -->
+                                        <!-- <div class="form-group">
+                                            <label>选择图片</label>
+                                            <input type="file" id="imgFile">
+                                            <p class="help-block">
+                                                <img src="" alt="" id="preImg" width="300">
+                                            </p>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>合作商家条约</label>
+                                            <textarea class="form-control" rows="3" id="decription"></textarea>
+                                        </div> -->
+
+
+                                        <button type="submit" class="btn btn-info" id="send">发送 </button>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /. PAGE WRAPPER  -->
+                </div>
+                <!-- /. WRAPPER  -->
+
+            </div>
+
+            <script src="/assets/js/jquery-1.10.2.js"></script>
+            <!-- BOOTSTRAP SCRIPTS -->
+            <script src="/assets/js/bootstrap.js"></script>
+            <!-- METISMENU SCRIPTS -->
+            <script src="/assets/js/jquery.metisMenu.js"></script>
+            <!-- CUSTOM SCRIPTS -->
+            <script src="/assets/js/custom.js"></script>
+
+            <script>
+                $(document).ready(() => {
+                    init()
+                })
+
+
+                // 设置课程默认，和监听
+                function setBase(data) {
+                    let configOption = JSON.parse(sessionStorage.getItem("changeOption"))
+                    if (configOption) {
+                        console.log(22)
+                        let {
+                            collegeId,
+                            courseId,
+                            unit,
+                            exam_type
+                        } = configOption
+                        data.college.forEach((i, index) => {
+                            if (i.id == collegeId) {
+                                $("#college option").eq(index).attr("selected", true)
+                            }
+                        });
+
+                        data.course.forEach((i, index) => {
+                            console.log(i.id)
+                            console.log(i)
+                            if (i.id == courseId) {
+
+                                $("#course option").eq(index).attr("selected", true)
+                            }
+                        });
+
+                        $("#unit option").eq(unit).attr("selected", true)
+                        var arr = ["日考", "周考", "月考"]
+                        arr.forEach((i, index) => {
+                            if (i == exam_type) {
+                                $("#exam_type option").eq(index).attr("selected", true)
+                            }
+                        });
+                    }
+                }
+
+                //初始化函数
+                function init() {
+                    $.ajax({
+                        url: '/api/back/classManage/selectClass', //用于文件上传的服务器端请求地址 
+                        type: "get",
+                        success: function(data) {
+                            console.log(data)
+                            if (data.code == "10121") {
+                                originData = data.data
+                                render(data.data)
+                            } else {
+                                alert("读取学院分类失败")
+                            }
+                        },
+                        error: function(data, status, e) //服务器响应失败处理函数 
+                            {
+                                alert(e);
+                            }
+                    })
+
+                }
+                //初始渲染函数
+                function render(data) {
+                    let collegeStr = '';
+
+                    data.college.forEach((i, index) => {
+                        if (index == 0) {
+                            collegeStr += ` <option value="${i.id}" selected>${i.cnname}</option>`
+                        } else {
+                            collegeStr += ` <option value="${i.id}">${i.cnname}</option>`
+                        }
+                    });
+                    let courseStr = ""
+                    data.course.forEach((j, index) => {
+                        if (j.parent_id == data.college[0].id) {
+                            courseStr += ` <option value="${j.id}">${j.cnname}</option>`
+                        }
+                    })
+                    $("#college").html(collegeStr)
+                    $("#course").html(courseStr)
+                    setBase(data)
+                    listen(data)
+                }
+                //事件监听
+                function listen(data) {
+                    $("#college").on("click", (e) => {
+                        let collegeId = '';
+                        data.college.forEach((i, index) => {
+                            if (e.target.value == i.id) {
+                                collegeId = i.id
+                            }
+                        });
+                        let courseStr = ""
+                        data.course.forEach((j, index) => {
+                            if (j.parent_id == collegeId) {
+                                courseStr += ` <option value="${j.id}">${j.cnname}</option>`
+                            }
+                        })
+                        $("#course").html(courseStr)
+                    })
+                    $("#send").click((e) => {
+                        e.preventDefault()
+                        var formData = new FormData();
+                        var files = document.getElementById('selectFile').files;
+                        var file = files[0];
+
+                        formData.append('myfile', file);
+
+                        formData.append('collegeId', $("#college").val());
+                        formData.append('courseId', $("#course").val());
+                        data.course.forEach(i => {
+                            if (i.id == $("#course").val()) {
+                                formData.append('course', i.enname);
+                            }
+                        });
+                        formData.append('unit', $("#unit").val());
+                        formData.append('exam_type', $("#exam_type").val());
+
+                        console.log(formData)
+                        $.ajax({
+                            url: '/api/back/questionsManage/addquestions', //用于文件上传的服务器端请求地址 
+                            type: "post",
+                            data: formData,
+                            processData: false, // tell jQuery not to process the data
+                            contentType: false, // tell jQuery not to set contentType
+                            success: function(data) //服务器成功响应处理函数 
+                                {
+                                    if (data.code == "10201") {
+                                        // 记忆选项
+                                        let configOption = {
+                                            collegeId: $("#college").val(),
+                                            courseId: $("#course").val(),
+                                            unit: $("#unit").val(),
+                                            exam_type: $("#exam_type").val()
+                                        }
+                                        sessionStorage.setItem("changeOption", JSON.stringify(configOption))
+                                        alert("添加成功")
+                                        window.location.reload()
+                                    } else {
+                                        alert("添加失败")
+                                    }
+                                },
+                            error: function(data, status, e) //服务器响应失败处理函数 
+                                {
+                                    alert(e);
+                                }
+                        })
+                    })
+                }
+            </script>
+</body>
+
+
+
+
+</html>

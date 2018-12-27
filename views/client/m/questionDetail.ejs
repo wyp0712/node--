@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>
+        <%= title%>
+    </title>
+    <link rel="stylesheet" href="/tool/swiper/css/swiper.min.css">
+    <link rel="stylesheet" href="/stylesheets/front/m/index.css">
+    <link rel="stylesheet" href="/stylesheets/common/icon_font/iconfont.css">
+    <script>
+        function Rem() {
+            if (document.documentElement.clientWidth >= 750) {
+
+                document.documentElement.style.width = 750 + "px";
+                var rem = 375 / 7.5;
+                document.documentElement.style.fontSize = rem + 'px';
+
+            } else if (document.documentElement.clientWidth <= 320) {
+                document.documentElement.style.width = 320 + "px";
+                var rem = 320 / 7.5;
+                document.documentElement.style.fontSize = rem + 'px';
+
+            } else {
+                var rem = document.documentElement.clientWidth / 7.5;
+                document.documentElement.style.fontSize = rem + 'px';
+            }
+        }
+        Rem()
+        window.onresize = function() {
+            Rem();
+        };
+    </script>
+
+
+    <script src="/tool/swiper/js/swiper.min.js"></script>
+</head>
+
+<body>
+    <div class="questionDetail">
+        <h2 class="title" onclick="(function(){window.location.href='/m/questionCollege'})()">
+            <i class="iconfont icon-return"></i>
+            <p>试题详情</p>
+        </h2>
+
+        <div class="swiper-container main questionDetailCon">
+            <div class="swiper-wrapper" id="swiperContent">
+
+            </div>
+        </div>
+        <footer class="questionDetailFooter">
+            <i>上一题</i>
+            <p class="questionAnswerBtn">答题卡</p>
+            <p class="questionAnswerSub">提交</p>
+            <i>下一题</i>
+        </footer>
+    </div>
+
+
+    <div id="answer" class="questionAnswer">
+        <nav class="questionAnswerNav">
+            <i>关闭</i>
+            <h3>答题卡</h3>
+        </nav>
+        <section class="questionAnswerCon">
+
+        </section>
+        <p class="questionAnswerSub">提交试卷查看结果</p>
+    </div>
+    <div class="pupop">
+        <p>无数据</p>
+    </div>
+    <script src="/javascripts/zepto.min.js"></script>
+    <script>
+        var mySwiper = null
+        $(document).ready(() => {
+                //标题设置
+                let title = sessionStorage.getItem("title")
+                $(".title p").html(title ? title + "试题详情" : "试题详情")
+                $.ajax({
+                    url: '/api/client/questions/getQuestionRandom', //用于文件上传的服务器端请求地址 
+                    type: "get",
+                    data: JSON.parse(sessionStorage.getItem("questionSendData")),
+                    success: function(data) {
+                        if (data.code == "20001") {
+                            // 存储数据
+                            console.log(data.data.questionIdArr.length)
+                            if (data.data.questionIdArr.length == 0) {
+                                $(".pupop").css("display", "flex")
+                                setTimeout(() => {
+                                    $(".pupop").hide()
+                                    window.location.href = "/m"
+                                }, 1500)
+                            }
+                            sessionStorage.setItem("questions", JSON.stringify(data.data))
+                            render(data.data)
+                        } else {
+                            alert("读取学院分类失败")
+                        }
+                    },
+                    error: function(data, status, e) //服务器响应失败处理函数 
+                        {
+                            alert(e);
+                        }
+                })
+                listen()
+            })
+            //原始事件监听
+        function listen() {
+            $(".questionAnswerBtn").click(() => {
+                renderAnswer()
+                $(".questionDetail").addClass("shade")
+                $(".questionAnswer").addClass("questionAnswerShow")
+                $(".shade:after").click(() => {
+                    $(".questionDetail").removeClass("shade")
+                    $(".questionAnswer").removeClass("questionAnswerShow")
+                })
+            })
+            $(".questionAnswer").click(() => {
+                $(".questionDetail").removeClass("shade")
+                $(".questionAnswer").removeClass("questionAnswerShow")
+            })
+            $(".questionAnswerSub").click(() => {
+                    window.location.href = "/m/questionResult"
+                })
+                // $(".questionDetailTitle").click(() => {
+                //     window.location.href = "/m"
+                // })
+            $(".questionDetailFooter i").eq(0).click(() => {
+                let num = mySwiper.activeIndex - 1
+                if (num <= 0) {
+                    num = 0
+                }
+                console.log(num)
+                mySwiper.slideTo(num, 1000, false); //切换到第一个slide，速度为1秒
+            })
+            $(".questionDetailFooter i").eq(1).click(() => {
+                let num = mySwiper.activeIndex + 1
+                if (num >= mySwiper.slides.length - 1) {
+                    num = mySwiper.slides.length - 1
+                }
+                console.log(num)
+                mySwiper.slideTo(num, 1000, false); //切换到第一个slide，速度为1秒
+            })
+        }
+
+        function SaferHTML(templateData) {
+
+            return templateData.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+        }
+        //初次渲染
+        function render(data) {
+            let str = "";
+            let answerhtml = ""
+
+            data.questionIdArr.forEach((i, index) => {
+                answerhtml += `<p><span>${index + 1}</span></p>`
+                let stem_type = i.stem_type.slice(i.stem_type.indexOf("-") + 1)
+                str += `
+                <div class="swiper-slide">
+                <section class="every_slide">
+                    <div class="stem">
+                            <label for="">${index + 1}、</label>
+                            <div>(${stem_type})(${i.unit}单元)${SaferHTML(i.stem)}</div></div>`
+                switch (stem_type) {
+                    case "单选":
+                        {
+                            str += ` <ul class="option answerRadio">
+                                <li class='${i.id}' data-type="A">
+                                    <label for="course">A、</label>
+                                    <div>${SaferHTML(i.option_1)}</div>
+                                </li>
+                                <li class='${i.id}' data-type="B">
+                                    <label for="unit">B、</label>
+                                    <div>${SaferHTML(i.option_2)}</div>
+                                </li>
+                                <li class='${i.id}' data-type="C">
+                                    <label for="stem_type">C、</label>
+                                    <div>${SaferHTML(i.option_3)}</div>
+                                </li>
+                                <li class='${i.id}' data-type="D">
+                                    <label for="stem_type">D、</label>
+                                    <div>${SaferHTML(i.option_4)}</div>
+                                </li>
+
+                            </ul>`
+                        }
+                        break;
+                    case "多选":
+                        {
+                            str += ` <ul class="option answerChecked">
+                                    <li class='${i.id}' data-type="A">
+                                    <label for="course">A、</label>
+                                    <div>${SaferHTML(i.option_1)}</div>
+                                </li>
+                                <li class='${i.id}' data-type="B">
+                                    <label for="unit">B、</label>
+                                    <div>${SaferHTML(i.option_2)}</div>
+                                </li>
+                                <li class='${i.id}' data-type="C">
+                                    <label for="stem_type">C、</label>
+                                    <div>${SaferHTML(i.option_3)}</div>
+                                </li>
+                                <li class='${i.id}' data-type="D">
+                                    <label for="stem_type">D、</label>
+                                    <div>${SaferHTML(i.option_4)}</div>
+                                </li>
+                            </ul>`
+                        }
+                        break;
+                    case "判断":
+                        {
+                            str += ` <ul class="option answerRadio">
+                                        <li class='${i.id}' data-type="A">
+                                            <label for="course">A、</label>
+                                            <div>对</div>
+                                        </li>
+                                        <li class='${i.id}' data-type="B">
+                                            <label for="unit">B、</label>
+                                            <div>错</div>
+                                        </li>
+                                        
+                                    </ul>`
+                        }
+                        break;
+                    default:
+                        {
+                            str += ` <ul class="option answerOhter">
+                                        <li>
+                                                <textarea class='${i.id}' cols="30" rows="10"></textarea>
+                                        </li>
+                                    </ul>`
+                        }
+                        break;
+                }
+                str += `</section> </div>
+                `
+            });
+            $("#swiperContent").html(str)
+            $(".questionAnswerCon").html(answerhtml)
+
+            $(".questionAnswer").css("bottom", "-" + parseInt($(".questionAnswer").height()))
+            mySwiper = new Swiper('.swiper-container', {
+                // direction: '',
+                initialSlide: 0
+            })
+            optionListen()
+        }
+        //单选选项数据处理
+        function answerHandle(id, answer) {
+            let questionsData = JSON.parse(sessionStorage.getItem("questions"))
+            let questionIdArr = questionsData.questionIdArr.map((i) => {
+                if (i.id == id) {
+                    i.answer = answer
+                }
+                return i
+            });
+            questionsData.questionIdArr = questionIdArr
+            sessionStorage.setItem("questions", JSON.stringify(questionsData))
+
+        }
+        //多选选项数据处理
+        function answerCheckedHandle(id, answer, target) {
+            let questionsData = JSON.parse(sessionStorage.getItem("questions"))
+            let questionIdArr = questionsData.questionIdArr.map((i) => {
+                if (i.id == id) {
+                    if (!i.answer) {
+                        i.answer = answer
+                    } else {
+                        if (i.answer.includes(answer)) {
+                            var reg = new RegExp(answer);
+                            var str = i.answer.replace(reg, "");
+                            console.log(str)
+                            target.css("color", "")
+                            i.answer = str
+                        } else {
+                            i.answer += answer
+                        }
+                    }
+                }
+                return i
+            });
+            questionsData.questionIdArr = questionIdArr
+            sessionStorage.setItem("questions", JSON.stringify(questionsData))
+
+        }
+        // 选项事件监听
+        function optionListen() {
+            // 单选
+            $(".answerRadio li div").click((e) => {
+                e.stopPropagation()
+                $(e.target.parentNode).siblings().css("color", "")
+                let id = $(e.target.parentNode).attr("class")
+                let answer = $(e.target.parentNode).attr("data-type")
+                $(e.target.parentNode).css("color", "#ea0f2c")
+                answerHandle(id, answer)
+            })
+            $(".answerRadio li").click((e) => {
+                    e.stopPropagation()
+                    $(e.target).siblings().css("color", "")
+                    let id = $(e.target).attr("class")
+                    let answer = $(e.target).attr("data-type")
+                    $(e.target).css("color", "#ea0f2c")
+                    answerHandle(id, answer)
+                })
+                // 多选
+            $(".answerChecked li div").click((e) => {
+                e.stopPropagation()
+
+                let id = $(e.target.parentNode).attr("class")
+                let answer = $(e.target.parentNode).attr("data-type")
+                $(e.target.parentNode).css("color", "#ea0f2c")
+                answerCheckedHandle(id, answer, $(e.target.parentNode))
+            })
+            $(".answerChecked li").click((e) => {
+                    e.stopPropagation()
+                    let id = $(e.target).attr("class")
+                    let answer = $(e.target).attr("data-type")
+                    $(e.target).css("color", "#ea0f2c")
+                    answerCheckedHandle(id, answer, $(e.target))
+                })
+                //问答，填空
+            $(".answerOhter textarea").on("blur", (e) => {
+                e.stopPropagation()
+                let id = $(e.target).attr("class")
+                let answer = $(e.target).val()
+                answerHandle(id, answer)
+            })
+
+
+        }
+
+        //答案渲染
+        function renderAnswer() {
+            let data = JSON.parse(sessionStorage.getItem("questions"))
+            let answerhtml = ""
+            data.questionIdArr.forEach((i, index) => {
+                if (i.answer) {
+                    answerhtml += `<p><span style="background:lightgreen">${index + 1}</span></p>`
+                } else {
+                    answerhtml += `<p><span>${index + 1}</span></p>`
+                }
+            })
+            $(".questionAnswerCon").html(answerhtml)
+            $(".questionAnswer").css("bottom", "-" + parseInt($(".questionAnswer").height()))
+            listenQuestionList()
+        }
+        //题号监听
+        function listenQuestionList() {
+            $(".questionAnswerCon span").click((e) => {
+                let num = e.target.innerHTML - 1
+                mySwiper.slideTo(num, 1000, false); //切换到第一个slide，速度为1秒
+            })
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,169 @@
+<nav class="navbar navbar-default navbar-cls-top " role="navigation" style="margin-bottom: 0">
+    <div class="navbar-header">
+        <!-- <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button> -->
+        <a class="navbar-brand" href="/back/main">考试后台管理系统</a>
+    </div>
+
+    <div class="header-right">
+
+        <!-- <a href="message-task.html" class="btn btn-info" title="New Message"><b>30 </b><i class="fa fa-envelope-o fa-2x"></i></a>
+        <a href="message-task.html" class="btn btn-primary" title="New Task"><b>40 </b><i class="fa fa-bars fa-2x"></i></a>
+        <a href="login.html" class="btn btn-danger" title="Logout"><i class="fa fa-exclamation-circle fa-2x"></i></a> -->
+
+    </div>
+</nav>
+<!-- /. NAV TOP  -->
+<nav class="navbar-default navbar-side" role="navigation">
+    <div class="sidebar-collapse">
+        <ul class="nav" id="main-menu">
+            <li>
+                <div class="user-img-div">
+                    <img src="/assets/img/timg.jpg" class="img-thumbnail" />
+
+                    <div class="inner-text">
+                        用户名：
+                        <%= userData.username%>
+                            <br />
+                            <small>上次登录:  <%= userData.logintime%> </small>
+                    </div>
+                </div>
+
+            </li>
+            <%if(userData.rose=="1000"){%>
+                <li>
+                    <a href="#"><i class="fa fa-desktop "></i>分类管理 <span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level">
+                        <li>
+                            <a href="/back/addCollege"><i class="fa fa-coffee"></i>添加学院</a>
+                        </li>
+                        <li>
+                            <a href="/back/addCourse"><i class="fa fa-flash"></i> 添加科目</a>
+                        </li>
+                        <li>
+                            <a href="/back/collegeList"><i class="fa fa-key"></i>学院分类列表</a>
+                        </li>
+                        <li>
+                            <a href="/back/courseList"><i class="fa fa-key"></i>课程分类列表</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <%}%>
+
+
+
+
+                    <li>
+                        <a href="#"><i class="fa fa-yelp "></i>题目管理 <span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                            <li>
+                                <a href="/back/addQuestions"><i class="fa fa-code "></i>添加试题</a>
+                            </li>
+                            <li>
+                                <a href="/back/questionsList"><i class="fa fa-flash "></i>试题列表</a>
+                            </li>
+
+
+
+                        </ul>
+                    </li>
+
+
+                    <!-- <li>
+                <a href="#"><i class="fa fa-bicycle "></i>合作商 <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+
+                    <li>
+                        <a href="/back/businesspartner"><i class="fa fa-desktop "></i>添加合作商 </a>
+                    </li>
+                    <li>
+                        <a href="/back/businesspartnerList"><i class="fa fa-code"></i>合作商列表</a>
+                    </li>
+
+                </ul>
+            </li>
+            <li>
+                <a href="#"><i class="fa fa-sitemap"></i>充值加油卡 <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+
+                    <li>
+                        <a href="/back/refuleClass"><i class="fa fa-desktop "></i>添加充值加油卡类型 </a>
+                    </li>
+                    <li>
+                        <a href="/back/refuleClassList"><i class="fa fa-code"></i>充值加油卡类型列表</a>
+                    </li>
+
+
+                </ul>
+            </li>
+            <li>
+                <a href="#"><i class="fa fa-anchor "></i>回收加油卡 <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+
+                    <li>
+                        <a href="/back/recycleRefuleClass"><i class="fa fa-desktop "></i>添加回收加油卡类型 </a>
+                    </li>
+                    <li>
+                        <a href="/back/recycleRefuleClassList"><i class="fa fa-code"></i>回收加油卡类型列表</a>
+                    </li>
+
+                </ul>
+            </li>
+            <li>
+                <a href="#"><i class="fa fa-anchor "></i>公司设置 <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+
+                    <li>
+                        <a href="/back/bannerSet"><i class="fa fa-desktop "></i>首页轮播图 </a>
+                    </li>
+                    <li>
+                        <a href="/back/baseSet"><i class="fa fa-code "></i>基本设置</a>
+                    </li>
+
+
+                </ul>
+            </li> -->
+
+                    <!-- <li>
+                <a href="/back/bannerSet"><i class="fa fa-sign-in "></i>banner设置</a>
+            </li>
+            <li>
+                <a href="#"><i class="fa fa-sitemap "></i> <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li>
+                        <a href="#"><i class="fa fa-bicycle "></i>Second Level Link</a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fa fa-flask "></i>Second Level Link</a>
+                    </li>
+                    <li>
+                        <a href="#">Second Level Link<span class="fa arrow"></span></a>
+                        <ul class="nav nav-third-level">
+                            <li>
+                                <a href="#"><i class="fa fa-plus "></i>Third Level Link</a>
+                            </li>
+                            <li>
+                                <a href="#"><i class="fa fa-comments-o "></i>Third Level Link</a>
+                            </li>
+
+                        </ul>
+
+                    </li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="blank.html"><i class="fa fa-square-o "></i>banner设置</a>
+            </li> -->
+        </ul>
+
+    </div>
+
+</nav>
+<script>
+</script>

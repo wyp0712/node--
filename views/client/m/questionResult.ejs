@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>
+        <%= title%>
+    </title>
+
+    <link rel="stylesheet" href="/stylesheets/front/m/index.css">
+    <link rel="stylesheet" href="/stylesheets/common/icon_font/iconfont.css">
+    <script>
+        function Rem() {
+            if (document.documentElement.clientWidth >= 750) {
+
+                document.documentElement.style.width = 750 + "px";
+                var rem = 375 / 7.5;
+                document.documentElement.style.fontSize = rem + 'px';
+
+            } else if (document.documentElement.clientWidth <= 320) {
+                document.documentElement.style.width = 320 + "px";
+                var rem = 320 / 7.5;
+                document.documentElement.style.fontSize = rem + 'px';
+
+            } else {
+                var rem = document.documentElement.clientWidth / 7.5;
+                document.documentElement.style.fontSize = rem + 'px';
+            }
+        }
+        Rem()
+        window.onresize = function() {
+            Rem();
+        };
+    </script>
+
+
+
+</head>
+
+<body>
+    <div class="questionDetail">
+        <h2 class="title" onclick="(function(){window.location.href='/m/questionDetail'})()">
+            <i class="iconfont icon-return"></i>
+            <p>考试结果</p>
+        </h2>
+        <div class="performance">
+            80分
+        </div>
+        <div id="answer" class="questionAnswer questionResult">
+            <nav class="questionAnswerNav">
+
+                <h3>答题卡</h3>
+
+            </nav>
+            <div class="questionResultType">
+                <p><b></b>对</p>
+                <p><b></b>错</p>
+                <p><b></b>半对</p>
+                <p><b></b>不支持判分</p>
+            </div>
+            <section class="questionAnswerCon">
+
+            </section>
+        </div>
+        <footer class="questionDetailFooter questionResultFooter">
+            <p>错题解析</p>
+            <p>重新练习</p>
+        </footer>
+    </div>
+    <script src="/javascripts/zepto.min.js"></script>
+    <script>
+        // var originData = null
+        $(document).ready(() => {
+                //标题设置
+                let title = sessionStorage.getItem("title")
+                $(".title p").html(title ? title + "考试结果" : "考试结果")
+                renderAnswer()
+                listen()
+            })
+            //原始事件监听
+        function listen() {
+            setTimeout(() => {
+                $(".questionResultFooter p").eq(0).click(() => {
+                    window.location.href = "/m/questionAnalyze"
+                })
+                $(".questionResultFooter p").eq(1).click(() => {
+                    window.location.href = "/m/questionCollege"
+                })
+            }, 2000)
+
+            $(".questionDetailTitle").click(() => {
+                    window.location.href = "/m/questionCollege"
+                })
+                //题号监听
+
+            $(".questionAnswerCon span").click((e) => {
+                let num = e.target.innerHTML - 1
+                sessionStorage.setItem("questionList", num)
+                window.location.href = "/m/questionAnalyze"
+            })
+
+
+        }
+
+
+        // 选项事件监听
+        function optionListen() {
+
+        }
+
+        //答案渲染
+        function renderAnswer() {
+            if (sessionStorage.getItem("questions")) {
+                let data = JSON.parse(sessionStorage.getItem("questions"))
+                let answerhtml = ""
+                let num = 0
+                data.questionIdArr.forEach((i, index) => {
+                    let stem_type = i.stem_type.slice(i.stem_type.indexOf("-") + 1)
+
+                    if (stem_type == "单选" || stem_type == "多选" || stem_type == "判断") {
+                        if (i.answer == i.result) {
+
+                            answerhtml += `<p><span style="background:lightgreen">${index + 1}</span></p>`
+                            num += 2.5
+                        } else {
+                            answerhtml += `<p><span style="background:#ff6666">${index + 1}</span></p>`
+                        }
+                    } else {
+                        answerhtml += `<p><span>${index + 1}</span></p>`
+                    }
+
+                })
+                $(".questionAnswerCon").html(answerhtml)
+                $(".performance").html(num + "分")
+
+                $(".questionAnswer").css("bottom", "-" + parseInt($(".questionAnswer").height()))
+            }
+
+        }
+    </script>
+</body>
+
+</html>
